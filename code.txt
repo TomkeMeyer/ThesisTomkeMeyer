@@ -1,0 +1,168 @@
+import numpy as np
+import pandas as pd
+import tensorflow as tf
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import MinMaxScaler
+
+# Set random seed for reproducibility
+np.random.seed(42)
+tf.random.set_seed(42)
+
+# Generate synthetic multivariate time series data
+time_steps = 1000
+time = np.arange(time_steps)
+
+# Simulated features: temperature, humidity, pressure
+temperature = np.sin(0.02 * time) + 0.5 * np.random.randn(time_steps)  # Target variable
+humidity = np.cos(0.02 * time) + 0.3 * np.random.randn(time_steps)
+pressure = np.sin(0.02 * time) * 0.5 + 0.2 * np.random.randn(time_steps)
+
+# Combine into a DataFrame
+df = pd.DataFrame({'temperature': temperature, 'humidity': humidity, 'pressure': pressure})
+
+# Normalize the data
+scaler = MinMaxScaler()
+df_scaled = scaler.fit_transform(df)
+
+# Function to create sequences for multistep forecasting
+def create_sequences_multistep(data, seq_length, horizon):
+    X, y = [], []
+    for i in range(len(data) - seq_length - horizon + 1):
+        X.append(data[i:i + seq_length])  # Past observations
+        y.append(data[i + seq_length: i + seq_length + horizon])  # Future observations
+    return np.array(X), np.array(y)
+
+# Define sequence length and forecast horizon
+SEQ_LENGTH = 30  # Use past 30 steps
+HORIZON = 5      # Predict next 5 steps
+X, y = create_sequences_multistep(df_scaled, SEQ_LENGTH, HORIZON)
+
+# Split into training and testing sets
+train_size = int(len(X) * 0.8)
+X_train, X_test = X[:train_size], X[train_size:]
+y_train, y_test = y[:train_size], y[train_size:]
+
+# ✅ Build LSTM Model for Multistep Forecasting
+model = tf.keras.Sequential([
+    tf.keras.layers.LSTM(64, return_sequences=True, input_shape=(SEQ_LENGTH, X.shape[2])),
+    tf.keras.layers.LSTM(32, return_sequences=False),
+    tf.keras.layers.Dense(HORIZON * X.shape[2]),  # Output layer for multistep prediction
+    tf.keras.layers.Reshape((HORIZON, X.shape[2]))  # Reshape to match the output format
+])
+
+# Compile the model
+model.compile(optimizer="adam", loss="mse")
+
+# Train the model
+history = model.fit(X_train, y_train, epochs=20, batch_size=16, validation_data=(X_test, y_test), verbose=1)
+
+# Plot training loss
+plt.plot(history.history['loss'], label="Train Loss")
+plt.plot(history.history['val_loss'], label="Val Loss")
+plt.xlabel("Epochs")
+plt.ylabel("Loss")
+plt.legend()
+plt.show()
+
+# Make predictions
+y_pred = model.predict(X_test)
+
+# Rescale predictions back to original scale
+y_test_actual = scaler.inverse_transform(y_test.reshape(-1, X.shape[2]))
+y_pred_actual = scaler.inverse_transform(y_pred.reshape(-1, X.shape[2]))
+
+# Plot actual vs predicted values (Temperature only)
+plt.figure(figsize=(10, 4))
+plt.plot(y_test_actual[:, 0], label="Actual Temperature", color="blue")
+plt.plot(y_pred_actual[:, 0], label="Predicted Temperature", color="red")
+plt.xlabel("Time Steps")
+plt.ylabel("Temperature")
+plt.legend()
+plt.show()
+
+
+
+
+
+
+parser = ArgumentParser()
+parser.add_argument( "--dataset", type=str, help="Choose dataset.")
+parser.add_argument( "--horizon", type=int, help="Horizon of forecasting task.")
+parser.add_argument( "--back-horizon", type=int, help="Back horizon of forecasting task.")
+parser.add_argument( "--random-seed", type=int, default=39, help="Random seed parameter, default 39.")
+parser.add_argument( "--train-size", type=float, default=0.8, help="Proportional size of the training set.")
+parser.add_argument( "--test-group", type=str, default=None, help="Extract random 100 samples from test group, i.e., 'hyper'/'hypo'; default None.")
+# Parse the arguments from a string
+args = parser.parse_args("--dataset ohiot1dm --horizon 3 --back-horizon 6 --random-seed 32 --train-size 0.8 --test-group hyper".split())
+#args = parser.parse_args("--dataset simulated --horizon 6 --back-horizon 6 --random-seed 32 --train-size 0.8 --test-group hyper".split())
+#args = parser.parse_args()
+data_path = "./data/"
+lst_arrays, lst_arrays_test, orig_train, orig_test = load_data(args.dataset, data_path) #misschien toch load_data gebruiken?
+print(lst_arrays, orig_train)
+print(f"The shape of loaded train: {len(lst_arrays)}*{lst_arrays[0].shape}")
+print(f"The shape of test: {len(lst_arrays_test)}*{lst_arrays_test[0].shape}")
+
+print(f"===========Desired trend parameters=============")
+center = "last"
+desired_shift, poly_order = 0, 1
+fraction_std = 1#args.fraction_std
+print(f"center: {center}, desired_shift: {desired_shift};")
+print(f"fraction_std:{fraction_std};")
+print(f"desired_change:'sample_based', poly_order:{poly_order}.")
+
+TARGET_COL = 0
+if args.dataset == "ohiot1dm":
+    CHANGE_COLS = [1, 2, 3, 4]
+elif args.dataset == "simulated": #???
+    CHANGE_COLS = [1, 2]
+else:
+    CHANGE_COLS = None
+
+RANDOM_STATE = args.random_seed
+TRAIN_SIZE = args.train_size
+horizon, back_horizon = args.horizon, args.back_horizon
+dataset = DataLoader(horizon, back_horizon)
+dataset.preprocessing(#???
+    lst_train_arrays=lst_arrays,
+    lst_test_arrays=lst_arrays_test,
+    train_size=TRAIN_SIZE,
+    normalize=True,
+    sequence_stride= horizon,
+    target_col=TARGET_COL,
+    horizon = horizon
+)
+
+X = np.concatenate((dataset.X_train_exog, dataset.X_train_target), axis=-1)
+y = dataset.Y_train
+X_test = np.concatenate((dataset.X_test_exog, dataset.X_test_target), axis=-1)
+y_test = dataset.X_test_target
+X_val = np.concatenate((dataset.X_val_exog, dataset.X_val_target), axis=-1)
+y_val = dataset.Y_val
+
+tf.random.set_seed(args.random_seed)
+
+n_in_features = X.shape[2]
+n_out_features = 1
+
+tf_model = tf.keras.models.Sequential(
+    [
+        tf.keras.layers.Input(shape=(back_horizon, n_in_features)),
+        # Shape [batch, time, features] => [batch, time, gru_units]
+        tf.keras.layers.GRU(100, activation="tanh", return_sequences=True),
+        tf.keras.layers.GRU(100, activation="tanh", return_sequences=False),
+        # Shape => [batch, time, features]
+        tf.keras.layers.Dense(horizon, activation="linear"),
+        tf.keras.layers.Reshape((horizon, n_out_features)),
+    ]
+)
+
+early_stopping = tf.keras.callbacks.EarlyStopping(
+    monitor="val_loss", min_delta=0.0001, patience=10, restore_best_weights=True
+)
+#orig_test_metric = np.asarray(orig_test.drop(['time'], axis=1))#[orig_test.patient_id==544], 'patient_id'
+optimizer = tf.keras.optimizers.legacy.Adam(learning_rate=0.0001)
+tf_model.compile(optimizer=optimizer, loss="mae")
+#tf_model.compile(optimizer='adam', loss='mse')
+tf_model.fit(X, y, epochs=200, batch_size=64, validation_data=(X_val, y_val), callbacks=[early_stopping],) #, validation_data=(X_test, y_test)
+pred_tf = tf_model(X_test)#[-horizon:])
+print(pred_tf)

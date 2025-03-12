@@ -1,0 +1,173 @@
+
+3:
+Time series forecasting plays a crucial role in a variety of applications, ranging from finance and supply chain management to healthcare and climate science. The primary goal of time series forecasting is to predict future values based on historical observations. Various models exist for this task, including statistical approaches such as ARIMA, regression-based methods, and deep learning models like N-BEATS. More recently, transformer-based models such as DLinear have shown promising results in time series forecasting. These models can incorporate exogenous features—external variables that influence the target series—enhancing prediction accuracy and reliability.
+
+In healthcare, time series forecasting has numerous applications, particularly in the analysis of electronic health records (EHRs). These records contain comprehensive information about a patient’s health over time, enabling predictions about disease progression, patient mortality, and treatment efficacy. For instance, forecasting glucose levels in diabetic patients or predicting heart failure with preserved ejection fraction (HFpEF) can support early interventions and optimize treatment strategies.
+
+For diabetes management, accurate forecasting of blood glucose levels is crucial for preventing complications such as hypoglycemia and hyperglycemia. By incorporating exogenous variables such as insulin intake, carbohydrate consumption, and physical activity, predictive models can generate actionable recommendations for patients and healthcare providers, allowing timely intervention. Dynamic adjustments in treatment based on forecasted glucose trends can improve glycemic control and reduce the long-term risk of diabetes-related complications.
+
+Similarly, in the case of HFpEF, time series forecasting can help monitor disease progression by predicting key physiological parameters such as heart rate, blood pressure, and oxygen saturation levels. By integrating exogenous factors like medication adherence, physical activity levels, and dietary intake, forecasting models can identify early warning signs of worsening heart failure and suggest personalized modifications to lifestyle or medication regimens. Such proactive monitoring can help reduce hospital readmissions and improve patient outcomes.
+
+Despite the advancements in predictive models, many deep learning-based forecasting systems function as black boxes, making it difficult to interpret their decisions. Interpretability is crucial, particularly in high-stakes applications like healthcare, where understanding model predictions can inform actionable treatment plans. One approach to improving interpretability is counterfactual explanations, which aim to identify the minimal changes needed to alter a model’s forecast to a desired outcome. 
+
+Traditional time series forecasting primarily focuses on predicting future values given past and current inputs, but modifying past values is not feasible in real-world settings, especially in medicine. Instead, a more practical approach is to explore how adjustments to exogenous variables during the forecast horizon could lead to a preferred outcome. This approach allows continuous monitoring of patients, enabling dynamic adjustments to treatment plans that steer health trajectories toward optimal results.
+
+Recent research efforts, such as COMET and forecastCF, have explored counterfactual explanations in time series forecasting. However, existing methods primarily focus on altering past observations or fail to provide actionable insights for real-world interventions. Our work aims to bridge this gap by formulating a counterfactual forecasting mechanism that identifies optimal changes in exogenous variables during the forecast horizon to achieve desired outcomes. Specifically, we propose a method that learns the relationship between exogenous features and forecasted targets, enabling more effective and interpretable decision-making in healthcare and beyond.
+
+\subsection{Main Contributions}
+Time series forecasting can be very useful in healthcare for predicting, for example, how well a treatment works and predicting the risk of mortality, relapse, complications, etc. Although a method like COMET\cite{wang2024comet} works well in finding the best treatment from the start of care, a medical time series cannot be changed after the fact. This means it would be more actionable when changing the exogenous variables during the forecast horizon, leading to the desired constrained forecast. 
+
+Given the time series, divided into target variable and exogenous variables, and the constraints for the forecast, COMET changes the time series or past to fit the forecast into the constraints. However, our proposal is to change the future by modifying the exogenous variables to ensure that the target variable aligns with the constraints. 
+
+Our contributions include:
+1. A new model that dynamically adjusts exogenous variables within the forecast horizon to achieve the desired constrained forecast.
+2. The integration of existing forecasting models, including SARIMAX, OLS, GRU, and NBEATSX, within this framework.
+3. A novel approach that enhances interpretability and actionable insights in medical time series forecasting.
+
+By integrating counterfactual explanations into time series forecasting, we provide a pathway toward more transparent, interpretable, and actionable predictive models, particularly in domains where decision-making has critical implications.
+
+
+
+
+
+
+Related work:
+1:
+counterfactual explanations and time series forecasting, particularly within healthcare applications:
+
+Counterfactual Explanations in Time Series Forecasting
+
+ForecastCF: Wang et al. (2023) introduced ForecastCF, an algorithm designed to generate counterfactual explanations for time series forecasting models. By applying gradient-based perturbations to the original time series, ForecastCF identifies minimal changes required to achieve desired prediction outcomes, enhancing the interpretability of deep forecasting models. 
+ARXIV.ORG
+
+TimeTuner: Hao et al. (2023) developed TimeTuner, a diagnostic tool that employs counterfactual explanations to analyze time representations in deep learning-based time series forecasting. The system connects relationships among time-series representations, multivariate features, and model predictions, providing insights into model behavior. 
+ARXIV.ORG
+
+Time Series Forecasting in Healthcare
+
+Blood Glucose Level Prediction: A study published in PLOS ONE (2024) conducted a comprehensive analysis of various deep learning models for predicting blood glucose levels in diabetic patients. The research emphasized the importance of model selection and highlighted potential biases in methodologies and datasets. 
+JOURNALS.PLOS.ORG
+
+Seasonal Trend Integrated Predictor (STIP): Researchers introduced STIP, a model that captures local and global patterns in blood glucose data using embeddings and convolutions. The model aims to learn the seasonality and trend of blood glucose levels to improve prediction accuracy. 
+LINK.SPRINGER.COM
+
+Deep Residual Time-Series Forecasting: A study presented at the OhioT1DM challenge explored the application of deep residual networks for blood glucose forecasting. The research demonstrated that accurate blood glucose forecasting could enhance diabetes treatment by enabling proactive interventions. 
+CEUR-WS.ORG
+
+Counterfactual Explanations in Multivariate Time Series
+
+CoMTE: This approach focuses on generating counterfactual explanations for multivariate time series classification models. By identifying minimal modifications to input variables, CoMTE provides insights into model decisions and potential intervention strategies. 
+BU.EDU
+These works collectively advance the understanding of counterfactual explanations and time series forecasting, offering valuable insights for developing interpretable and actionable models in healthcare and other domains.
+
+2:
+Time series forecasting plays a crucial role in a variety of applications, ranging from finance and supply chain management to healthcare and climate science. The primary goal of time series forecasting is to predict future values based on historical observations. Various models exist for this task, including statistical approaches such as ARIMA, regression-based methods, and deep learning models like N-BEATS. More recently, transformer-based models such as DLinear have shown promising results in time series forecasting. These models can incorporate exogenous features—external variables that influence the target series—enhancing prediction accuracy and reliability.
+
+In healthcare, time series forecasting has numerous applications, particularly in the analysis of electronic health records (EHRs). These records contain comprehensive information about a patient’s health over time, enabling predictions about disease progression, patient mortality, and treatment efficacy. For instance, forecasting glucose levels in diabetic patients or predicting heart failure with preserved ejection fraction (HFpEF) can support early interventions and optimize treatment strategies.
+
+Despite the advancements in predictive models, many deep learning-based forecasting systems function as black boxes, making it difficult to interpret their decisions. Interpretability is crucial, particularly in high-stakes applications like healthcare, where understanding model predictions can inform actionable treatment plans. One approach to improving interpretability is counterfactual explanations, which aim to identify the minimal changes needed to alter a model’s forecast to a desired outcome. 
+
+Traditional time series forecasting primarily focuses on predicting future values given past and current inputs, but modifying past values is not feasible in real-world settings, especially in medicine. Instead, a more practical approach is to explore how adjustments to exogenous variables during the forecast horizon could lead to a preferred outcome. This approach allows continuous monitoring of patients, enabling dynamic adjustments to treatment plans that steer health trajectories toward optimal results.
+
+Recent research efforts, such as COMET and forecastCF, have explored counterfactual explanations in time series forecasting. However, existing methods primarily focus on altering past observations or fail to provide actionable insights for real-world interventions. Our work aims to bridge this gap by formulating a counterfactual forecasting mechanism that identifies optimal changes in exogenous variables during the forecast horizon to achieve desired outcomes. Specifically, we propose a method that learns the relationship between exogenous features and forecasted targets, enabling more effective and interpretable decision-making in healthcare and beyond.
+
+\subsection{Main Contributions}
+Time series forecasting can be very useful in healthcare for predicting, for example, how well a treatment works and predicting the risk of mortality, relapse, complications, etc. Although a method like COMET\cite{wang2024comet} works well in finding the best treatment from the start of care, a medical time series cannot be changed after the fact. This means it would be more actionable when changing the exogenous variables during the forecast horizon, leading to the desired constrained forecast. 
+
+Given the time series, divided into target variable and exogenous variables, and the constraints for the forecast, COMET changes the time series or past to fit the forecast into the constraints. However, our proposal is to change the future by modifying the exogenous variables to ensure that the target variable aligns with the constraints. 
+
+Our contributions include:
+1. A new model that dynamically adjusts exogenous variables within the forecast horizon to achieve the desired constrained forecast.
+2. The integration of existing forecasting models, including SARIMAX, OLS, GRU, and NBEATSX, within this framework.
+3. A novel approach that enhances interpretability and actionable insights in medical time series forecasting.
+
+By integrating counterfactual explanations into time series forecasting, we provide a pathway toward more transparent, interpretable, and actionable predictive models, particularly in domains where decision-making has critical implications.
+
+\subsection{Related Work}
+Deep Multi-Output Forecasting\cite{fox2018deep} presents a framework for learning to predict blood glucose trajectories using deep learning methods. This work highlights the importance of multi-step forecasting, reducing error accumulation by predicting the entire trajectory at once rather than relying on recursive single-step predictions.
+
+ForecastCF\cite{wang2023forecastcf} is a deep time series forecasting algorithm that generates counterfactuals using gradient-based perturbations of the original time series. This method allows constraints to be imposed on forecasted values, enhancing interpretability and actionable insights.
+
+COMET\cite{wang2024comet} extends ForecastCF by introducing counterfactual explanations specifically tailored for multivariate time series forecasting. Applied to glucose forecasting, COMET explores changes in exogenous variables such as insulin intake, carbohydrate consumption, and physical activity to generate desired target forecasts. This enables more personalized treatment strategies by recommending actionable changes in a patient's routine to achieve normal glucose levels.
+
+Other related works focus on forecasting with exogenous variables or multivariate forecasting, leveraging various methodologies:
+- **Statistical approaches**: ARIMAX and VARIMAX extend traditional time series models to include exogenous factors.
+- **Transformer-based models**: DLinear applies transformer architectures to capture long-range dependencies in multivariate forecasting.
+- **Deep learning models**: NBEATSX, an extension of NBEATS, integrates exogenous variables into its forecasting framework, enhancing predictive performance.
+
+These works provide a strong foundation for our research, which aims to bridge the gap between counterfactual forecasting and actionable interventions by modifying exogenous variables within the forecast horizon.
+
+\subsection{Datasets}
+There are many possible applications for the proposed model, including domains beyond healthcare. However, this study focuses on medical applications, specifically on identifying optimal treatment plans for two different use cases: type 1 diabetes management and heart failure with preserved ejection fraction (HFpEF). The datasets used in this study contain physiological and treatment-related variables, enabling personalized forecasts and counterfactual interventions.
+
+\subsubsection{Data Preparation and Preprocessing}
+Before applying the forecasting models, the datasets undergo several preprocessing steps:
+
+Missing Data Handling: Interpolation or imputation techniques are used to fill in missing values, ensuring continuity in time series data.
+Normalization: All numerical variables are normalized using min-max scaling to facilitate stable model training.
+Feature Engineering: Temporal features such as time of day and meal timing are extracted to enhance predictive performance.
+Segmentation: The time series is segmented into overlapping windows to create input-output pairs for training.
+Data Augmentation: For simulated datasets, data augmentation techniques such as time warping and jittering are applied to increase variability and robustness.
+\subsubsection{SimGlucose}
+The SimGlucose dataset is generated using the FDA-approved UVA/PADOVA type 1 diabetes simulator \cite{xie2018simglucose}. This Python-based simulator \cite{man2014uva} models the physiological responses of virtual patients with type 1 diabetes. The dataset includes 30 virtual patients (10 adults, 10 adolescents, 10 children), providing CGM measurements along with insulin dosage and carbohydrate intake as exogenous variables.
+
+For this study:
+
+The dataset is generated with a predefined CGM sampling frequency and insulin pump settings.
+Blood glucose levels are used as the target variable, while insulin administration and carbohydrate intake serve as exogenous features.
+Data is structured into rolling windows for forecasting, with appropriate constraints applied to exogenous variables to generate counterfactual samples.
+\subsubsection{OhioT1DM}
+The OhioT1DM dataset \cite{marling2020ohiot1dm} contains real-world glucose monitoring data from individuals with type 1 diabetes. Unlike SimGlucose, this dataset includes additional exogenous variables such as:
+
+Bolus and basal insulin delivery
+Carbohydrate intake
+Physical activity records
+Since this dataset is collected from real patients, it includes missing data and irregular sampling intervals, which are handled using interpolation techniques and resampling. The availability of a broader range of exogenous variables allows for more complex counterfactual interventions, improving the interpretability and performance of forecasting models.
+
+\subsubsection{MIMIC-III}
+Beyond diabetes forecasting, the proposed model aims to generalize to other medical applications, such as predicting disease progression in HFpEF patients. The MIMIC-III dataset \cite{johnson2016mimic} contains de-identified electronic health records (EHRs) of ICU patients, including:
+
+Vital signs (heart rate, blood pressure, oxygen saturation, etc.)
+Medication records
+Laboratory results
+For this study, a subset of MIMIC-III focusing on cardiovascular patients is used. The target variable is chosen based on clinical outcomes such as hospitalization or mortality risk, while exogenous variables include medication adherence, physical activity levels, and dietary intake. Data preprocessing includes filtering ICU stays, imputing missing values, and aligning time series sequences for forecasting.
+
+
+\subsection{Experimental Setup}
+In our experiments, we evaluate the proposed counterfactual forecasting framework using four different forecasting models: SARIMAX, OLS, GRU, and NBEATSx. Each model is assessed based on its ability to generate accurate forecasts while enabling counterfactual interventions on exogenous variables.
+
+Key experimental parameters:
+
+Learning Rate: For deep learning models (GRU, NBEATSx), an adaptive learning rate is used, initialized at 0.001 and reduced upon validation loss plateau.
+Early Stopping: Applied with a patience of 10 epochs, monitoring validation loss to prevent overfitting.
+Forecast Horizon: Set to 30–60 minutes for glucose prediction tasks, depending on dataset constraints.
+Back-Horizon: Historical window lengths of 3–6 hours are used for feature extraction.
+Constraints:
+Exogenous variable constraints are imposed to ensure realistic and actionable counterfactual recommendations.
+Trend constraints are implemented using the COMET framework, enforcing physiologically meaningful glucose fluctuations.
+\subsubsection{SARIMAX}
+Seasonal Autoregressive Integrated Moving Average with Exogenous Variables (SARIMAX) is a traditional statistical forecasting model that accounts for seasonality and external influences. It is implemented as follows:
+
+Parameter selection: The order of autoregression (p), differencing (d), and moving average (q) is determined using Akaike Information Criterion (AIC).
+Exogenous variables: Insulin dosage and carbohydrate intake are incorporated as regressors.
+Optimization: Maximum likelihood estimation (MLE) is used for parameter tuning.
+\subsubsection{OLS}
+Ordinary Least Squares (OLS) regression is used as a baseline for understanding linear relationships between exogenous variables and the target variable. Key configurations:
+
+Feature engineering: Time-lagged variables and interaction terms between insulin and carbohydrate intake.
+Regularization: L2 (Ridge) regularization is applied to prevent overfitting.
+Constraint enforcement: Linear constraints on exogenous variables are applied post-hoc to generate counterfactual scenarios.
+\subsubsection{GRU}
+Gated Recurrent Unit (GRU) is a recurrent neural network model suited for time series forecasting. Implementation details:
+
+Architecture: Two-layer GRU with 128 hidden units per layer.
+Dropout: Applied at 0.2 to prevent overfitting.
+Optimization: Adam optimizer with an initial learning rate of 0.001, reduced by 0.1 if validation loss stagnates for 5 epochs.
+Counterfactual Generation: Exogenous variable gradients are computed to identify minimal modifications required for achieving target constraints.
+\subsubsection{NBEATSx}
+NBEATSx extends the NBEATS model by incorporating exogenous variables. Configuration:
+
+Block structure: Trend and seasonality decomposition using fully connected layers.
+Exogenous input: Carbohydrate intake, insulin dosage, and physical activity are fed into the model.
+Loss Function: Quantile loss to handle distributional uncertainty in forecasts.
+Interpretability: Feature importance analysis is conducted to assess the influence of exogenous variables on predictions.
